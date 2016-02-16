@@ -23,7 +23,7 @@ Before adding a new virtual, it should be discussed on <c>gentoo-dev</c>.
 An example of a virtual:
 
 <codesample lang="ebuild">
-EAPI=4
+EAPI=6
 
 DESCRIPTION="Virtual for C++ tr1 &lt;type_traits&gt;"
 SLOT="0"
