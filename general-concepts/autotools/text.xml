@@ -124,7 +124,7 @@ either <c>Makefile.am</c> or <c>configure.ac</c>:
 </p>
 
 <codesample lang="ebuild">
-EAPI=5
+EAPI=6
 
 inherit autotools
 
@@ -136,11 +136,12 @@ src_prepare() {
     einfo "Regenerating autotools files..."
     WANT_AUTOCONF=2.5 eautoconf
     WANT_AUTOMAKE=1.9 eautomake
+
+    default
 }
 
-src_compile() {
+src_configure() {
     econf $(use_enable nls)
-    emake
 }
 </codesample>
 
