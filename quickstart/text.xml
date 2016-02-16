@@ -34,11 +34,11 @@ can see real ebuilds in the main tree).
 </p>
 
 <codesample lang="ebuild">
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="Exuberant ctags generates tags files for quick source navigation"
 HOMEPAGE="http://ctags.sourceforge.net"
@@ -55,8 +55,9 @@ src_configure() {
 src_install() {
     emake DESTDIR="${D}" install
 
-    dodoc FAQ NEWS README
-    dohtml EXTENDING.html ctags.html
+    DOCS=( FAQ NEWS README )
+    HTML_DOCS=( EXTENDING.html ctags.html )
+    einstalldocs
 }
 </codesample>
 </body>
@@ -162,8 +163,9 @@ installs.
 </note>
 
 <p>
-The <c>dodoc</c> and <c>dohtml</c> are helper functions for installing
-files into the relevant part of <c>/usr/share/doc</c>.
+The <c>einstalldocs</c> is a helper functions for installing
+files specified in <c>DOCS</c> and <c>HTML_DOCS</c> variables
+into the relevant part of <c>/usr/share/doc</c>.
 </p>
 
 <p>
@@ -206,11 +208,11 @@ Here's <c>app-misc/detox/detox-1.1.1.ebuild</c>:
 </p>
 
 <codesample lang="ebuild">
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="detox safely removes spaces and strange characters from filenames"
 HOMEPAGE="http://detox.sourceforge.net/"
@@ -230,8 +232,8 @@ src_configure() {
 }
 
 src_install() {
-    emake DESTDIR="${D}" install
-    dodoc README CHANGES
+    DOCS=( README CHANGES )
+    default
 }
 </codesample>
 
@@ -263,21 +265,17 @@ compile-time dependencies, and the <c>RDEPEND</c> lists runtime dependencies. Se
 <body>
 <p>
 Often we need to apply patches. This is done in the <c>src_prepare</c>
-function using the <c>epatch</c> helper function. To use <c>epatch</c>
-one must first tell Portage that the <c>eutils</c> eclass (an eclass is
-like a library) is required <d/>
-this is done via <c>inherit eutils</c> at the top of the ebuild. Here's
-<c>app-misc/detox/detox-1.1.0.ebuild</c>:
+function using the <c>eapply</c> helper function.
+<note><c>eapply</c> has been introduced in EAPI=6. See <uri link="::ebuild-writing/eapi"/>.</note>
+Here's <c>app-misc/detox/detox-1.1.0.ebuild</c>:
 </p>
 
 <codesample lang="ebuild">
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
-
-inherit eutils
+EAPI=6
 
 DESCRIPTION="detox safely removes spaces and strange characters from filenames"
 HOMEPAGE="http://detox.sourceforge.net/"
@@ -293,17 +291,13 @@ DEPEND="${RDEPEND}
     sys-devel/bison"
 
 src_prepare() {
-    epatch "${FILESDIR}"/${P}-destdir.patch \
+    eapply "${FILESDIR}"/${P}-destdir.patch \
         "${FILESDIR}"/${P}-parallel_build.patch
+    eapply_user
 }
 
 src_configure() {
     econf --with-popt
-}
-
-src_install() {
-    emake DESTDIR="${D}" install
-    dodoc README CHANGES
 }
 </codesample>
 
@@ -329,11 +323,11 @@ replacement iconv for <c>libc</c> implementations which don't have their own.
 </p>
 
 <codesample lang="ebuild">
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="GNU charset conversion library for libc which doesn't implement it"
 HOMEPAGE="http://www.gnu.org/software/libiconv/"
@@ -348,10 +342,6 @@ DEPEND="!sys-libs/glibc"
 
 src_configure() {
     econf $(use_enable nls)
-}
-
-src_install() {
-    emake DESTDIR="${D}" install
 }
 </codesample>
 
@@ -373,11 +363,11 @@ Another more complicated example, this time based upon
 </p>
 
 <codesample lang="ebuild">
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 inherit eutils
 
@@ -404,8 +394,9 @@ DEPEND="${RDEPEND}
     nls? ( >=sys-devel/gettext-0.12.1 )"
 
 src_prepare() {
-    epatch "${FILESDIR}"/${PN}-namespace.diff \
+    eapply "${FILESDIR}"/${PN}-namespace.diff \
         "${FILESDIR}"/${PN}-procmime.diff
+    eapply_user
 }
 
 src_configure() {
